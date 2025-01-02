@@ -1,10 +1,11 @@
-import { useState } from "react";
 import { useAppDispatch, useAppSelector } from "./app/hooks";
+import { useState } from "react";
 import {
   incremented,
   decremented,
   incrementedByAmount,
 } from "./features/counter/counter-slice";
+import { useFetchBreedsQuery } from "./features/dog/dogs-api-slice";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
@@ -12,6 +13,9 @@ import "./App.css";
 function App() {
   const value = useAppSelector((state) => state.counter.value);
   const dispatch = useAppDispatch();
+  const [numdogs, setNumDogs] = useState(5);
+
+  const { data = [], isFetching } = useFetchBreedsQuery(numdogs);
 
   return (
     <>
@@ -31,9 +35,42 @@ function App() {
         <button onClick={() => dispatch(incrementedByAmount(3))}>
           count incremented by 3
         </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+        <div>
+          <p>Dogs to fetch:</p>
+          <select
+            value={numdogs}
+            onChange={(e) => setNumDogs(Number(e.target.value))}
+          >
+            <option value="5">five</option>
+            <option value="10">ten</option>
+            <option value="15">fifteen</option>
+            <option value="20">twenty</option>
+          </select>
+        </div>
+        <div>
+          <p>
+            {/* Edit <code>src/App.tsx</code> and save to test HMR */}
+            Number of dog breeds: {data.length}
+          </p>
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Image</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.map((breed) => (
+                <tr key={breed.id}>
+                  <td>{breed.name}</td>
+                  <td>
+                    <img src={breed.image.url} alt={breed.name} height="250" />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
       <p className="read-the-docs">
         Click on the Vite and React logos to learn more
